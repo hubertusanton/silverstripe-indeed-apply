@@ -1,0 +1,43 @@
+{
+    "name": "webium/silverstripe-indeed-apply",
+    "description": "Indeed Apply integration for SilverStripe - receive job applications via Indeed's Quick Apply feature",
+    "type": "silverstripe-vendormodule",
+    "keywords": [
+        "silverstripe",
+        "indeed",
+        "indeed-apply",
+        "apply",
+        "jobs",
+        "recruitment",
+        "ats",
+        "applicant-tracking"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Webium",
+            "homepage": "https://webium.nl"
+        }
+    ],
+    "homepage": "https://github.com/webium/silverstripe-indeed-apply",
+    "support": {
+        "issues": "https://github.com/webium/silverstripe-indeed-apply/issues",
+        "source": "https://github.com/webium/silverstripe-indeed-apply"
+    },
+    "require": {
+        "php": ">=7.4",
+        "silverstripe/framework": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webium\\IndeedApply\\": "src/"
+        }
+    },
+    "extra": {
+        "expose": [
+            "client"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

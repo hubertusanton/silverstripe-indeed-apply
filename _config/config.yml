@@ -1,0 +1,18 @@
+---
+Name: indeed-apply-config
+---
+# CSRF protection exemption for Indeed Apply endpoint
+SilverStripe\Security\SecurityToken:
+  exempt_controllers:
+    - 'Webium\IndeedApply\Controllers\IndeedApplyController'
+
+# Indeed Apply configuration
+Webium\IndeedApply\Controllers\IndeedApplyController:
+  # URL segment for the endpoint (default: 'indeed-apply')
+  # Change this to customize the route, e.g., 'jobs/apply' or 'api/indeed'
+  # Note: You must also update routing.yml if you change this
+  url_segment: 'indeed-apply'
+
+# Authentication is configured via environment variables in .env:
+# - INDEED_APPLY_API_SECRET: Your shared API secret from Indeed
+# - INDEED_APPLY_REQUIRE_SIGNATURE: Set to "true" for production

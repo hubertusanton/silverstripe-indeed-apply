@@ -1,0 +1,10 @@
+---
+Name: indeed-apply-routes
+After: '#rootroutes'
+---
+# Indeed Apply endpoint routing
+# To change the route, update both this file and config.yml
+# Example: Change 'indeed-apply' to 'jobs/apply' for /jobs/apply endpoint
+SilverStripe\Control\Director:
+  rules:
+    'indeed-apply': 'Webium\IndeedApply\Controllers\IndeedApplyController'
