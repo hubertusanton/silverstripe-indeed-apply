@@ -249,6 +249,9 @@ class IndeedApplyController extends Controller
             // Create file in assets
             $file = File::create();
             $file->setFromString($content, 'Uploads/IndeedApply/Resumes/' . $filename);
+
+            // Protect file - only logged-in users can view
+            $file->CanViewType = 'LoggedInUsers';
             $file->write();
 
             $apply->ResumeID = $file->ID;

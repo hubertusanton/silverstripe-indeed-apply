@@ -201,15 +201,7 @@ The `SignatureValid` field in logs shows whether the HMAC-SHA1 signature was val
 
 ## Resume File Security
 
-Resume files are uploaded to `Uploads/IndeedApply/Resumes/`. To protect these files from public access:
-
-1. Go to the CMS **Files** section
-2. Navigate to the `Uploads/IndeedApply` folder
-3. Click on the folder and go to **Details**
-4. Under **Who can view this file?**, select **Logged-in users**
-5. Save the folder settings
-
-This ensures that resume files are only accessible to logged-in CMS users.
+Resume files are uploaded to `Uploads/IndeedApply/Resumes/` and are automatically protected. Each uploaded resume has `CanViewType` set to `LoggedInUsers`, ensuring that only logged-in CMS users can access the files.
 
 ## Troubleshooting
 
