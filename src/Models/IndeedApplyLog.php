@@ -35,7 +35,9 @@ class IndeedApplyLog extends DataObject
 		'RequestIP',
 		'SignatureValid.Nice',
 		'Success.Nice',
-		'IndeedApply.CandidateName' => 'Candidate',
+		'IndeedApply.CandidateFullName' => 'Candidate',
+		'IndeedApply.CandidateFirstName' => 'First Name',
+		'IndeedApply.CandidateLastName' => 'Last Name',
 	];
 
 	private static $default_sort = 'Created DESC';
@@ -63,7 +65,9 @@ class IndeedApplyLog extends DataObject
 		$labels['ErrorMessage'] = _t(__CLASS__ . '.ErrorMessage', 'Error Message');
 		$labels['IndeedApply'] = _t(__CLASS__ . '.IndeedApply', 'Application');
 		$labels['Created'] = _t(__CLASS__ . '.Created', 'Date/Time');
-		$labels['IndeedApply.CandidateName'] = _t(__CLASS__ . '.Candidate', 'Candidate');
+		$labels['IndeedApply.CandidateFullName'] = _t(__CLASS__ . '.Candidate', 'Candidate');
+		$labels['IndeedApply.CandidateFirstName'] = _t(__CLASS__ . '.CandidateFirstName', 'First Name');
+		$labels['IndeedApply.CandidateLastName'] = _t(__CLASS__ . '.CandidateLastName', 'Last Name');
 
 		return $labels;
 	}
