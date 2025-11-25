@@ -199,6 +199,18 @@ The `SignatureValid` field in logs shows whether the HMAC-SHA1 signature was val
 - **CSRF Protection:** Disabled for this endpoint (required for external POST requests)
 - **File uploads:** Max 5MB, allowed extensions: pdf, doc, docx, txt, rtf
 
+## Resume File Security
+
+Resume files are uploaded to `Uploads/IndeedApply/Resumes/`. To protect these files from public access:
+
+1. Go to the CMS **Files** section
+2. Navigate to the `Uploads/IndeedApply` folder
+3. Click on the folder and go to **Details**
+4. Under **Who can view this file?**, select **Logged-in users**
+5. Save the folder settings
+
+This ensures that resume files are only accessible to logged-in CMS users.
+
 ## Troubleshooting
 
 ### "Method Not Allowed" error
