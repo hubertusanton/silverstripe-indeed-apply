@@ -129,7 +129,9 @@ class IndeedApplyController extends Controller
 
             // Map candidate information from nested 'applicant' object
             $applicantData = $postData['applicant'] ?? [];
-            $apply->CandidateName = $applicantData['fullName'] ?? null;
+            $apply->CandidateFullName = $applicantData['fullName'] ?? null;
+            $apply->CandidateFirstName = $applicantData['firstName'] ?? null;
+            $apply->CandidateLastName = $applicantData['lastName'] ?? null;
             $apply->CandidateEmail = $applicantData['email'] ?? null;
             $apply->CandidatePhone = $applicantData['phoneNumber'] ?? null;
 
@@ -348,7 +350,7 @@ class IndeedApplyController extends Controller
         $response->setStatusCode($code);
         $response->setBody(json_encode([
             'success' => false,
-            'error' => $message
+            'error'   => $message
         ]));
         $response->addHeader('Content-Type', 'application/json');
         return $response;

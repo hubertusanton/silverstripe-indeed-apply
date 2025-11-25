@@ -136,7 +136,9 @@ The module expects the following fields from Indeed:
 - `jobUrl` - URL to job posting
 
 ### Candidate Information
-- `name` - Candidate name
+- `fullName` - Full name
+- `firstName` - First name
+- `lastName` - Last name
 - `email` - Email address
 - `phoneNumber` - Phone number
 - `coverLetter` - Cover letter
