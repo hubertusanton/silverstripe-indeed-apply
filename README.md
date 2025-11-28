@@ -226,8 +226,7 @@ Check if Indeed is actually sending POST requests to the endpoint.
 
 ## Requirements
 
-- SilverStripe 4.x
-- PHP 7.4 or higher
+- SilverStripe 4.x or 5.x
 
 ## Documentation
 
