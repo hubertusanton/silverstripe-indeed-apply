@@ -135,17 +135,19 @@ class IndeedApplyController extends Controller
             $apply->CandidateEmail = $applicantData['email'] ?? null;
             $apply->CandidatePhone = $applicantData['phoneNumber'] ?? null;
 
-            // Check for duplicate application
+            // Check for duplicate application (within last 120 days per Indeed spec)
             $candidateEmail = $apply->CandidateEmail;
             $jobId = $apply->JobId;
             if ($candidateEmail && $jobId) {
+                $duplicateWindowDate = date('Y-m-d H:i:s', strtotime('-120 days'));
                 $existingApplication = IndeedApply::get()->filter([
                     'CandidateEmail' => $candidateEmail,
-                    'JobId' => $jobId
+                    'JobId' => $jobId,
+                    'Created:GreaterThan' => $duplicateWindowDate
                 ])->first();
 
                 if ($existingApplication) {
-                    return $this->errorResponse($log, 409, 'Duplicate application: candidate has already applied for this job');
+                    return $this->errorResponse($log, 409, 'Duplicate application: candidate has already applied for this job within the last 120 days');
                 }
             }
 
