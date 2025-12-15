@@ -33,6 +33,7 @@ class IndeedApplyLog extends DataObject
 		'Created',
 		'RequestMethod',
 		'RequestIP',
+		'ResponseCode',
 		'SignatureValid.Nice',
 		'Success.Nice',
 		'IndeedApply.CandidateFullName' => 'Candidate',

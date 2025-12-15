@@ -135,6 +135,30 @@ class IndeedApplyController extends Controller
             $apply->CandidateEmail = $applicantData['email'] ?? null;
             $apply->CandidatePhone = $applicantData['phoneNumber'] ?? null;
 
+            // Check for duplicate application
+            $candidateEmail = $apply->CandidateEmail;
+            $jobId = $apply->JobId;
+            if ($candidateEmail && $jobId) {
+                $existingApplication = IndeedApply::get()->filter([
+                    'CandidateEmail' => $candidateEmail,
+                    'JobId' => $jobId
+                ])->first();
+
+                if ($existingApplication) {
+                    return $this->errorResponse($log, 409, 'Duplicate application: candidate has already applied for this job');
+                }
+            }
+
+            // Validate JobId via extension hook (e.g., check if job exists in ATS)
+            if ($jobId) {
+                $jobValidationError = null;
+                $this->extend('validateJobId', $jobId, $jobValidationError);
+
+                if ($jobValidationError) {
+                    return $this->errorResponse($log, 410, $jobValidationError);
+                }
+            }
+
             // Map cover letter
             $apply->CoverLetter = $this->getPostValue($postData, 'coverLetter');
 

@@ -199,6 +199,62 @@ The `SignatureValid` field in logs shows whether the HMAC-SHA1 signature was val
 - **CSRF Protection:** Disabled for this endpoint (required for external POST requests)
 - **File uploads:** Max 5MB, allowed extensions: pdf, doc, docx, txt, rtf
 
+## Response Codes
+
+The endpoint returns the following HTTP status codes:
+
+| Code | Description |
+|------|-------------|
+| 200  | Application received successfully |
+| 401  | Invalid signature (when `INDEED_APPLY_REQUIRE_SIGNATURE` is enabled) |
+| 405  | Method not allowed (only POST is accepted) |
+| 409  | Duplicate application: candidate has already applied for this job |
+| 410  | Job does not exist or is no longer available (via extension hook) |
+
+### Duplicate Application Check (409)
+
+The module automatically checks for duplicate applications based on `CandidateEmail` and `JobId`. If a candidate has already applied for the same job, the endpoint returns HTTP 409.
+
+## Extension Hooks
+
+The controller provides extension hooks for custom validation logic.
+
+### validateJobId Hook
+
+Use this hook to validate whether a JobId exists in your ATS (Applicant Tracking System). If the job doesn't exist, return a 410 response.
+
+**Create an extension in your application:**
+
+```php
+// app/src/Extension/IndeedApplyJobValidator.php
+namespace App\Extension;
+
+use SilverStripe\Core\Extension;
+
+class IndeedApplyJobValidator extends Extension
+{
+    public function validateJobId(string $jobId, ?string &$error): void
+    {
+        // Check against your ATS
+        $jobExists = MyATSService::jobExists($jobId);
+
+        if (!$jobExists) {
+            $error = "Job {$jobId} does not exist or is no longer available";
+        }
+    }
+}
+```
+
+**Register in `app/_config/config.yml`:**
+
+```yaml
+Webium\IndeedApply\Controllers\IndeedApplyController:
+  extensions:
+    - App\Extension\IndeedApplyJobValidator
+```
+
+Run `dev/build flush=1` after adding the extension.
+
 ## Resume File Security
 
 Resume files are uploaded to `Uploads/IndeedApply/Resumes/` and are automatically protected. Each uploaded resume has `CanViewType` set to `LoggedInUsers`, ensuring that only logged-in CMS users can access the files.
