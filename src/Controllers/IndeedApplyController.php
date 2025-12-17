@@ -116,13 +116,25 @@ class IndeedApplyController extends Controller
                 return $this->successResponse('Application received but requires manual review');
             }
 
-            // Validate required fields
+            // Validate required fields (per Indeed spec)
             $missingFields = [];
             if (empty($postData['job']['jobId'])) {
                 $missingFields[] = 'job.jobId';
             }
+            if (empty($postData['applicant']['fullName'])) {
+                $missingFields[] = 'applicant.fullName';
+            }
+            if (empty($postData['applicant']['firstName'])) {
+                $missingFields[] = 'applicant.firstName';
+            }
+            if (empty($postData['applicant']['lastName'])) {
+                $missingFields[] = 'applicant.lastName';
+            }
             if (empty($postData['applicant']['email'])) {
                 $missingFields[] = 'applicant.email';
+            }
+            if (!isset($postData['applicant']['verified'])) {
+                $missingFields[] = 'applicant.verified';
             }
             if (!empty($missingFields)) {
                 return $this->errorResponse(

@@ -119,10 +119,12 @@ INDEED_APPLY_REQUIRE_SIGNATURE="true"
 Add the following field to your Indeed XML feed:
 
 ```xml
-<indeed-apply-data><![CDATA[indeed-apply-apiToken=YOUR_API_TOKEN&indeed-apply-jobTitle=JOB_TITLE&indeed-apply-jobId=JOB_ID&indeed-apply-jobCompanyName=COMPANY_NAME&indeed-apply-jobLocation=LOCATION&indeed-apply-jobUrl=https%3A%2F%2Fyourdomain.com%2Fjob-url&indeed-apply-postUrl=https%3A%2F%2Fyourdomain.com%2Findeed-apply%2F]]></indeed-apply-data>
+<indeed-apply-data><![CDATA[indeed-apply-apiToken=YOUR_API_TOKEN&indeed-apply-jobTitle=JOB_TITLE&indeed-apply-jobId=JOB_ID&indeed-apply-jobCompanyName=COMPANY_NAME&indeed-apply-jobLocation=LOCATION&indeed-apply-jobUrl=https%3A%2F%2Fyourdomain.com%2Fjob-url&indeed-apply-postUrl=https%3A%2F%2Fyourdomain.com%2Findeed-apply%2F&indeed-apply-name=firstlastname]]></indeed-apply-data>
 ```
 
-**Note:** The `indeed-apply-postUrl` must point to your domain's `/indeed-apply/` endpoint
+**Important:**
+- The `indeed-apply-postUrl` must point to your domain's `/indeed-apply/` endpoint
+- **`indeed-apply-name` must be set to `firstlastname`** - This module requires separate `firstName` and `lastName` fields. Without this setting, Indeed only sends `fullName` and the module will return HTTP 400 for missing required fields.
 
 ## Expected Data
 
@@ -206,10 +208,26 @@ The endpoint returns the following HTTP status codes:
 | Code | Description |
 |------|-------------|
 | 200  | Application received successfully |
+| 400  | Missing required fields in JSON payload |
 | 401  | Invalid signature (when `INDEED_APPLY_REQUIRE_SIGNATURE` is enabled) |
 | 405  | Method not allowed (only POST is accepted) |
-| 409  | Duplicate application: candidate has already applied for this job |
+| 409  | Duplicate application: candidate has already applied for this job within the last 120 days |
 | 410  | Job does not exist or is no longer available (via extension hook) |
+
+### Required Fields (400)
+
+The following fields are required in the JSON payload:
+
+| Field | Required |
+|-------|----------|
+| `job.jobId` | Yes |
+| `applicant.fullName` | Yes |
+| `applicant.firstName` | Yes, when `indeed-apply-name` is set to `firstlastname` |
+| `applicant.lastName` | Yes, when `indeed-apply-name` is set to `firstlastname` |
+| `applicant.email` | Yes |
+| `applicant.verified` | Yes |
+
+If any required field is missing, the endpoint returns HTTP 400 with a list of missing fields.
 
 ### Duplicate Application Check (409)
 
