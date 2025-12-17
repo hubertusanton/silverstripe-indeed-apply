@@ -280,6 +280,8 @@ class IndeedApplyController extends Controller
                 // Array with fileName, contentType, and data (Indeed format)
                 $content = base64_decode($resumeData['data'] ?? $resumeData['content'] ?? '');
                 $filename = $resumeData['fileName'] ?? $resumeData['name'] ?? $resumeData['filename'] ?? ('resume_' . date('YmdHis') . '.pdf');
+                // Sanitize filename - remove special characters
+                $filename = $this->sanitizeFilename($filename);
             } else {
                 return;
             }
@@ -302,6 +304,39 @@ class IndeedApplyController extends Controller
             // Log error but don't fail the entire request
             error_log('Resume upload failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Sanitize filename for safe storage
+     * Removes special characters, spaces, and ensures a clean filename
+     *
+     * @param string $filename The original filename
+     * @return string Sanitized filename
+     */
+    private function sanitizeFilename($filename)
+    {
+        // Get file extension
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $basename = pathinfo($filename, PATHINFO_FILENAME);
+
+        // Replace spaces with hyphens
+        $basename = str_replace(' ', '-', $basename);
+
+        // Remove special characters (keep only alphanumeric, hyphens, underscores)
+        $basename = preg_replace('/[^a-zA-Z0-9\-_]/', '', $basename);
+
+        // Remove multiple consecutive hyphens
+        $basename = preg_replace('/-+/', '-', $basename);
+
+        // Trim hyphens from start and end
+        $basename = trim($basename, '-');
+
+        // Ensure we have a valid basename
+        if (empty($basename)) {
+            $basename = 'resume_' . date('YmdHis');
+        }
+
+        return $basename . '.' . $extension;
     }
 
     /**
