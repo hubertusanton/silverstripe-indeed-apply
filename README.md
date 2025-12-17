@@ -214,6 +214,7 @@ The endpoint returns the following HTTP status codes:
 | 404  | Job does not exist in the system (via `validateJobExists` extension hook) |
 | 409  | Duplicate application: candidate has already applied for this job within the last 120 days |
 | 410  | Job is expired or no longer published (via `validateJobExpired` extension hook) |
+| 413  | Payload too large (exceeds PHP's `post_max_size` setting) |
 
 ### Required Fields (400)
 

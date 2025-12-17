@@ -84,6 +84,18 @@ class IndeedApplyController extends Controller
                 );
             }
 
+            // Check payload size against PHP's post_max_size
+            $maxPayloadSize = $this->getMaxPayloadSize();
+            $contentLength = (int) $request->getHeader('Content-Length');
+
+            if ($contentLength > 0 && $contentLength > $maxPayloadSize) {
+                return $this->errorResponse(
+                    $log,
+                    413,
+                    sprintf('Payload too large. Maximum size is %s.', ini_get('post_max_size'))
+                );
+            }
+
             // Indeed sends JSON in the raw body, not as form data
             $rawBody = $request->getBody();
             $log->RequestBody = $rawBody;
@@ -411,6 +423,37 @@ class IndeedApplyController extends Controller
 
         // Encode to base64
         return base64_encode($hash);
+    }
+
+    /**
+     * Get maximum payload size from PHP's post_max_size setting
+     *
+     * @return int Maximum payload size in bytes
+     */
+    private function getMaxPayloadSize()
+    {
+        $postMaxSize = ini_get('post_max_size');
+
+        if (empty($postMaxSize)) {
+            return 8 * 1024 * 1024; // Default 8MB
+        }
+
+        $unit = strtoupper(substr($postMaxSize, -1));
+        $value = (int) $postMaxSize;
+
+        switch ($unit) {
+            case 'G':
+                $value *= 1024 * 1024 * 1024;
+                break;
+            case 'M':
+                $value *= 1024 * 1024;
+                break;
+            case 'K':
+                $value *= 1024;
+                break;
+        }
+
+        return $value;
     }
 
     /**
