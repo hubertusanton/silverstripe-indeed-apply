@@ -177,8 +177,8 @@ class IndeedApplyController extends Controller
                 }
             }
 
-            // Map cover letter
-            $apply->CoverLetter = $this->getPostValue($postData, 'coverLetter');
+            // Map cover letter (in applicant object)
+            $apply->CoverLetter = $applicantData['coverletter'] ?? null;
 
             // Store custom questions as JSON
             $customQuestions = $this->extractCustomQuestions($postData);
