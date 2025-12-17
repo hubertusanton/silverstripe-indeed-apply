@@ -179,13 +179,22 @@ class IndeedApplyController extends Controller
                 }
             }
 
-            // Validate JobId via extension hook (e.g., check if job exists in ATS)
+            // Validate JobId via extension hooks
             if ($jobId) {
-                $jobValidationError = null;
-                $this->extend('validateJobId', $jobId, $jobValidationError);
+                // Check if job exists in the system (404)
+                $jobNotFoundError = null;
+                $this->extend('validateJobExists', $jobId, $jobNotFoundError);
 
-                if ($jobValidationError) {
-                    return $this->errorResponse($log, 410, $jobValidationError);
+                if ($jobNotFoundError) {
+                    return $this->errorResponse($log, 404, $jobNotFoundError);
+                }
+
+                // Check if job is expired/unpublished (410)
+                $jobExpiredError = null;
+                $this->extend('validateJobExpired', $jobId, $jobExpiredError);
+
+                if ($jobExpiredError) {
+                    return $this->errorResponse($log, 410, $jobExpiredError);
                 }
             }
 

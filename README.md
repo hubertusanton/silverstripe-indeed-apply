@@ -211,8 +211,9 @@ The endpoint returns the following HTTP status codes:
 | 400  | Missing required fields in JSON payload |
 | 401  | Invalid signature (when `INDEED_APPLY_REQUIRE_SIGNATURE` is enabled) |
 | 405  | Method not allowed (only POST is accepted) |
+| 404  | Job does not exist in the system (via `validateJobExists` extension hook) |
 | 409  | Duplicate application: candidate has already applied for this job within the last 120 days |
-| 410  | Job does not exist or is no longer available (via extension hook) |
+| 410  | Job is expired or no longer published (via `validateJobExpired` extension hook) |
 
 ### Required Fields (400)
 
@@ -235,11 +236,15 @@ The module automatically checks for duplicate applications based on `CandidateEm
 
 ## Extension Hooks
 
-The controller provides extension hooks for custom validation logic.
+The controller provides extension hooks for custom validation logic. These hooks allow you to validate JobIds against your ATS (Applicant Tracking System).
 
-### validateJobId Hook
+### validateJobExists Hook (404)
 
-Use this hook to validate whether a JobId exists in your ATS (Applicant Tracking System). If the job doesn't exist, return a 410 response.
+Use this hook to check if a JobId exists in your system. If the job doesn't exist at all, set the error to return HTTP 404.
+
+### validateJobExpired Hook (410)
+
+Use this hook to check if a job is expired or no longer published. If the job exists but is no longer available, set the error to return HTTP 410.
 
 **Create an extension in your application:**
 
@@ -251,13 +256,27 @@ use SilverStripe\Core\Extension;
 
 class IndeedApplyJobValidator extends Extension
 {
-    public function validateJobId(string $jobId, ?string &$error): void
+    /**
+     * Check if job exists in the system (404 if not found)
+     */
+    public function validateJobExists(string $jobId, ?string &$error): void
     {
-        // Check against your ATS
-        $jobExists = MyATSService::jobExists($jobId);
+        $job = MyATSService::findJob($jobId);
 
-        if (!$jobExists) {
-            $error = "Job {$jobId} does not exist or is no longer available";
+        if (!$job) {
+            $error = "Job {$jobId} does not exist";
+        }
+    }
+
+    /**
+     * Check if job is expired/unpublished (410 if expired)
+     */
+    public function validateJobExpired(string $jobId, ?string &$error): void
+    {
+        $job = MyATSService::findJob($jobId);
+
+        if ($job && !$job->isPublished()) {
+            $error = "Job {$jobId} is no longer available";
         }
     }
 }
