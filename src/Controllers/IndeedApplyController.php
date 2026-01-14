@@ -274,6 +274,7 @@ class IndeedApplyController extends Controller
     /**
      * Extract custom questions from POST data
      * Indeed uses "questionsAndAnswers" array in new integrations
+     * and "screenerQuestionsAndAnswers.questionsAndAnswers" for screener questions
      *
      * @param array $postData The decoded POST data
      * @return array Array of custom questions and answers
@@ -282,9 +283,19 @@ class IndeedApplyController extends Controller
     {
         $customQuestions = [];
 
-        // New format: questionsAndAnswers array
+        // Screener questions format: screenerQuestionsAndAnswers.questionsAndAnswers
+        if (isset($postData['screenerQuestionsAndAnswers']['questionsAndAnswers'])
+            && is_array($postData['screenerQuestionsAndAnswers']['questionsAndAnswers'])
+        ) {
+            $customQuestions = array_merge(
+                $customQuestions,
+                $postData['screenerQuestionsAndAnswers']['questionsAndAnswers']
+            );
+        }
+
+        // Root level format: questionsAndAnswers array
         if (isset($postData['questionsAndAnswers']) && is_array($postData['questionsAndAnswers'])) {
-            $customQuestions = $postData['questionsAndAnswers'];
+            $customQuestions = array_merge($customQuestions, $postData['questionsAndAnswers']);
         }
 
         // Legacy format: look for question_* keys
