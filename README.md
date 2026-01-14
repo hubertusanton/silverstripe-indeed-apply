@@ -215,6 +215,7 @@ The endpoint returns the following HTTP status codes:
 | 409  | Duplicate application: candidate has already applied for this job within the last 120 days |
 | 410  | Job is expired or no longer published (via `validateJobExpired` extension hook) |
 | 413  | Payload too large (exceeds PHP's `post_max_size` setting) |
+| 422  | Unable to save application (valid JSON but can't be processed) |
 
 ### Required Fields (400)
 

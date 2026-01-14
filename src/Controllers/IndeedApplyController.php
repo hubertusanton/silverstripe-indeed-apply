@@ -228,7 +228,11 @@ class IndeedApplyController extends Controller
             }
 
             // Save the application
-            $apply->write();
+            try {
+                $apply->write();
+            } catch (\Exception $e) {
+                return $this->errorResponse($log, 422, 'Unable to save application');
+            }
 
             // Link log to application
             $log->IndeedApplyID = $apply->ID;
