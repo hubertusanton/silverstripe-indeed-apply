@@ -18,6 +18,7 @@ class IndeedApply extends DataObject implements PermissionProvider
     private static $table_name = 'IndeedApply';
 
     private static $db = [
+        'IndeedApplyId'      => DBVarchar::class . '(64)',
         'JobTitle'           => DBVarchar::class . '(255)',
         'JobId'              => DBVarchar::class . '(255)',
         'JobCompanyName'     => DBVarchar::class . '(255)',
@@ -48,6 +49,10 @@ class IndeedApply extends DataObject implements PermissionProvider
         'Resume' => File::class,
     ];
 
+    private static $indexes = [
+        'IndeedApplyId' => true,
+    ];
+
     private static $owns = [
         'Resume',
     ];
@@ -76,6 +81,7 @@ class IndeedApply extends DataObject implements PermissionProvider
     {
         $labels = parent::fieldLabels($includerelations);
 
+        $labels['IndeedApplyId'] = _t(__CLASS__ . '.IndeedApplyId', 'Indeed Apply ID');
         $labels['JobTitle'] = _t(__CLASS__ . '.JobTitle', 'Job Title');
         $labels['JobId'] = _t(__CLASS__ . '.JobId', 'Job ID');
         $labels['JobCompanyName'] = _t(__CLASS__ . '.JobCompanyName', 'Company Name');
@@ -119,8 +125,14 @@ class IndeedApply extends DataObject implements PermissionProvider
         // Rename Main tab
         $fields->findOrMakeTab('Root.Main', _t(__CLASS__ . '.Tab_Main', 'Job Information'));
 
+        $indeedApplyIdField = $fields->dataFieldByName('IndeedApplyId');
+        if ($indeedApplyIdField) {
+            $indeedApplyIdField = $indeedApplyIdField->performReadonlyTransformation();
+        }
+
         // Add job fields to Main tab
         $fields->addFieldsToTab('Root.Main', [
+            $indeedApplyIdField,
             $fields->dataFieldByName('JobTitle'),
             $fields->dataFieldByName('JobId'),
             $fields->dataFieldByName('JobCompanyName'),

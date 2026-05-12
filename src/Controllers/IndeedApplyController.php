@@ -159,6 +159,9 @@ class IndeedApplyController extends Controller
             // Create IndeedApply record
             $apply = IndeedApply::create();
 
+            // Indeed-assigned unique apply ID (top-level "id" field, a.k.a. apply_id)
+            $apply->IndeedApplyId = $postData['id'] ?? null;
+
             // Map job information from nested 'job' object
             $jobData = $postData['job'] ?? [];
             $apply->JobTitle = $jobData['jobTitle'] ?? null;
