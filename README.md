@@ -73,12 +73,11 @@ Add the following to your project's `.env` file:
 ```env
 # Indeed Apply Module Configuration
 INDEED_APPLY_API_SECRET="your-api-secret-here"
-INDEED_APPLY_REQUIRE_SIGNATURE="false"
 ```
 
 **Environment Variables:**
-- `INDEED_APPLY_API_SECRET` - Your shared API secret from Indeed Apply integration settings
-- `INDEED_APPLY_REQUIRE_SIGNATURE` - Set to `"true"` to require valid signatures (recommended for production)
+- `INDEED_APPLY_API_SECRET` - Your shared API secret from Indeed Apply integration settings. As soon as this is set, signature verification is enforced: requests with an invalid or missing signature are rejected with HTTP 401.
+- `INDEED_APPLY_REQUIRE_SIGNATURE` - **Deprecated.** Verification is now enforced automatically whenever a secret is configured. This flag only opts in to verification *before* a secret is set and has no effect once `INDEED_APPLY_API_SECRET` is present.
 
 The controller reads these environment variables directly using `Environment::getEnv()`.
 
@@ -91,20 +90,21 @@ The controller reads these environment variables directly using `Environment::ge
 
 ### Security Options
 
-**Development mode** (default):
-```env
-INDEED_APPLY_REQUIRE_SIGNATURE="false"
-```
+Signature verification is tied to the presence of `INDEED_APPLY_API_SECRET`.
+
+**Development mode** (no secret configured):
+- Leave `INDEED_APPLY_API_SECRET` unset
 - All requests are accepted regardless of signature
-- Signature validation status is logged for debugging
-- Use this for initial testing
+- Signature validation status is still logged for debugging
+- Use this only for initial testing
 
 **Production mode** (recommended):
 ```env
-INDEED_APPLY_REQUIRE_SIGNATURE="true"
+INDEED_APPLY_API_SECRET="your-api-secret-here"
 ```
-- Only requests with valid signatures are accepted
-- Invalid signatures return HTTP 401 Unauthorized
+- Verification is enforced automatically as soon as the secret is set
+- Only requests with a valid `x-indeed-signature` are accepted
+- Invalid or missing signatures return HTTP 401 Unauthorized
 - Protects against unauthorized POST requests
 
 ### Getting Your API Secret
@@ -209,7 +209,7 @@ The endpoint returns the following HTTP status codes:
 |------|-------------|
 | 200  | Application received successfully |
 | 400  | Missing required fields in JSON payload |
-| 401  | Invalid signature (when `INDEED_APPLY_REQUIRE_SIGNATURE` is enabled) |
+| 401  | Invalid or missing signature (when `INDEED_APPLY_API_SECRET` is configured) |
 | 405  | Method not allowed (only POST is accepted) |
 | 404  | Job does not exist in the system (via `validateJobExists` extension hook) |
 | 409  | Duplicate application: candidate has already applied for this job within the last 120 days |
@@ -316,7 +316,7 @@ Check if Indeed is actually sending POST requests to the endpoint.
 ### Invalid signature errors (HTTP 401)
 1. Verify your `INDEED_APPLY_API_SECRET` in `.env` matches the shared secret in your Indeed Apply integration settings
 2. Check the `SignatureValid` field in `IndeedApplyLog` to see signature validation status
-3. Ensure `INDEED_APPLY_REQUIRE_SIGNATURE` is set to `"false"` during initial testing
+3. To accept all requests during initial testing, leave `INDEED_APPLY_API_SECRET` unset (verification is only enforced once a secret is configured)
 4. Confirm the `X-Indeed-Signature` header is being sent by Indeed
 
 ## Requirements

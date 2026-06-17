@@ -14,5 +14,6 @@ Webium\IndeedApply\Controllers\IndeedApplyController:
   url_segment: 'indeed-apply'
 
 # Authentication is configured via environment variables in .env:
-# - INDEED_APPLY_API_SECRET: Your shared API secret from Indeed
-# - INDEED_APPLY_REQUIRE_SIGNATURE: Set to "true" for production
+# - INDEED_APPLY_API_SECRET: Your shared API secret from Indeed. Signature
+#   verification is enforced automatically as soon as this is set.
+# - INDEED_APPLY_REQUIRE_SIGNATURE: Deprecated; no effect once a secret is set.

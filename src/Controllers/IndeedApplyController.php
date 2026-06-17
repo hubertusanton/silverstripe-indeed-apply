@@ -47,13 +47,28 @@ class IndeedApplyController extends Controller
     }
 
     /**
-     * Check if signature verification is required
-     * Reads INDEED_APPLY_REQUIRE_SIGNATURE from environment
+     * Check if signature verification is required.
+     *
+     * Verification is mandatory whenever an API secret is configured: an invalid
+     * or missing signature is then rejected with HTTP 401. Previously a missing or
+     * "false" INDEED_APPLY_REQUIRE_SIGNATURE value let anyone POST unsigned
+     * applications even though a secret was set.
+     *
+     * @deprecated INDEED_APPLY_REQUIRE_SIGNATURE is retained only as a legacy opt-in
+     *             for before a secret is configured. It can no longer disable
+     *             verification once INDEED_APPLY_API_SECRET is present, and has no
+     *             effect without a secret (HMAC cannot be verified without it).
      *
      * @return bool
      */
     private function requiresSignatureVerification()
     {
+        // A configured API secret always enforces signature verification.
+        if (!empty($this->getApiSecret())) {
+            return true;
+        }
+
+        // Legacy opt-in flag (deprecated, no effect without a secret).
         $requireSignature = Environment::getEnv('INDEED_APPLY_REQUIRE_SIGNATURE');
         return ($requireSignature === true || $requireSignature === 'true' || $requireSignature === '1');
     }
